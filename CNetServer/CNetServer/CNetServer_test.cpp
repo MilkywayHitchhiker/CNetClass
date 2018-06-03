@@ -6,13 +6,15 @@
 
 CCrashDump Dump;
 
-class ECHO :public CNetServer
+class ChatServer :public CNetServer
 {
+private:
+	CQueue_LF<Packet *> UpdateQueue;
 public:
-	ECHO (void)
+	ChatServer (void)
 	{
 	}
-	~ECHO (void)
+	~ChatServer (void)
 	{
 		Stop ();
 	}
@@ -53,14 +55,30 @@ public:
 	{
 		return;
 	}
+
+
+	/*======================================================================
+	//Update
+	//설명 : ChatServer Main.
+	//인자 : LPVOID pParam; = CLanServer this pointer 를 일로 넘겨받음.
+	//리턴 : 0
+	======================================================================*/
+	static unsigned int WINAPI Update (LPVOID pParam)
+	{
+
+	}
 };
 
-ECHO Network;
+ChatServer Chat;
+
+
+
+
 
 int main ()
 {
 	wprintf (L"MainThread Start\n");
-	Network.Start (L"127.0.0.1", 6000, 5000, 3);
+	Chat.Start (L"127.0.0.1", 6000, 5000, 3);
 
 
 	UINT AcceptTotal = 0;
@@ -89,13 +107,13 @@ int main ()
 
 			wprintf (L"==========================\n");
 
-			AcceptTotal = Network.AcceptTotal ();
-			AcceptTPS = Network.AcceptTPS (true);
-			RecvTPS = Network.RecvTPS (true);
-			SendTPS = Network.SendTPS (true);
-			ConnectSessionCnt = Network.Use_SessionCnt ();
-			MemoryPoolCnt = Network.Full_MemPoolCnt ();
-			MemoryPoolUse = Network.Alloc_MemPoolCnt ();
+			AcceptTotal = Chat.AcceptTotal ();
+			AcceptTPS = Chat.AcceptTPS (true);
+			RecvTPS = Chat.RecvTPS (true);
+			SendTPS = Chat.SendTPS (true);
+			ConnectSessionCnt = Chat.Use_SessionCnt ();
+			MemoryPoolCnt = Chat.Full_MemPoolCnt ();
+			MemoryPoolUse = Chat.Alloc_MemPoolCnt ();
 
 			StartTime = EndTime;
 		}
@@ -103,7 +121,7 @@ int main ()
 
 		if ( GetAsyncKeyState ('E') & 0x8001 )
 		{
-			Network.Stop ();
+			Chat.Stop ();
 			break;
 		}
 
@@ -111,7 +129,7 @@ int main ()
 		/*
 		else if ( GetAsyncKeyState ('S') & 0x8001 )
 		{
-		Network.Start (L"127.0.0.1", 6000, 200, 3);
+		Chat.Start (L"127.0.0.1", 6000, 200, 3);
 		}
 		*/
 
