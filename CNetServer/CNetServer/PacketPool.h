@@ -136,7 +136,7 @@ protected:
 	int iRefCnt;
 
 public :
-	static CMemoryPool<Packet> *PacketPool;
+	static CMemoryPool_TLS<Packet> *PacketPool;
 
 public :
 	
@@ -144,7 +144,7 @@ public :
 	{
 		if ( PacketPool == NULL )
 		{
-			PacketPool = new CMemoryPool<Packet> (0);
+			PacketPool = new CMemoryPool_TLS<Packet> (0);
 		}
 		return;
 	}

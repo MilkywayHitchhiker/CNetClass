@@ -22,7 +22,7 @@
 #include <Windows.h>
 #include <new.h>
 
-#define TLS_basicChunkSize 10000
+#define TLS_basicChunkSize 1000
 
 
 
@@ -492,10 +492,6 @@ private:
 
 };
 
-
-//test중==============================================================================================================================================
-//test중==============================================================================================================================================
-//test중==============================================================================================================================================
 template <class DATA>
 class CMemoryPool_TLS
 {
@@ -533,7 +529,7 @@ private:
 		}
 		~Chunk ()
 		{
-			free (_pArray);
+
 		}
 
 		bool ChunkSetting (int iBlockNum, CMemoryPool_TLS<DATA> *pManager)
@@ -551,7 +547,7 @@ private:
 			FreeCnt = 0;
 			FullCnt = iBlockNum;
 			_pMain_Manager = pManager;
-			_pArray = ( st_BLOCK_NODE * )malloc (sizeof (st_BLOCK_NODE) *iBlockNum);
+			_pArray = ( st_BLOCK_NODE * )malloc (sizeof (st_BLOCK_NODE) * iBlockNum);
 
 
 			for ( int Cnt = 0; Cnt < iBlockNum; Cnt++ )
@@ -604,6 +600,7 @@ private:
 
 			if ( Cnt == FullCnt )
 			{
+				free (_pArray);
 				free(this);
 			}
 
@@ -637,7 +634,6 @@ public:
 
 		_pTopNode = NULL;
 		Chunk_in_BlockCnt = iBlockNum;
-		InitializeSRWLock (&_CS);
 		TlsNum = TlsAlloc ();
 
 		//TLS가 생성이 불가한 상태이므로 자기자신을 파괴하고 종료.
@@ -691,15 +687,10 @@ public:
 			pChunkNode->ThreadID = GetCurrentThreadId ();
 			pChunkNode->pChunk->ChunkSetting (Chunk_in_BlockCnt, this);
 
-
-		//	AcquireSRWLockExclusive (&_CS);
 			TlsSetValue (TlsNum, pChunkNode);
 
 			pChunkNode->pNextNode = _pTopNode;
 			_pTopNode = pChunkNode;
-
-		//	ReleaseSRWLockExclusive (&_CS);
-
 
 			InterlockedAdd (( volatile long * )&m_iBlockCount, Chunk_in_BlockCnt);
 
@@ -748,7 +739,7 @@ public:
 		{
 			if ( pPreTopNode->ThreadID == ThreadID )
 			{
-				pPreTopNode->pChunk = new Chunk<DATA>;
+				pPreTopNode->pChunk = (Chunk<DATA> *)malloc (sizeof (Chunk<DATA>));
 				pPreTopNode->pChunk->ChunkSetting (Chunk_in_BlockCnt, this);
 				break;
 			}
