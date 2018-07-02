@@ -3,19 +3,45 @@
 #include <Windows.h>
 #include "MemoryPool.h"
 
+struct HEADER
+{
+	char Code;
+	short Len;
+	unsigned char RandXOR;
+	unsigned char CheckSum;
+};
+
+struct ErrorAlloc
+{
+	int UseDataSize;
+	int GetSize;
+	int PutSize;
+	int UseHeaderSize;
+
+	int Flag;
+};
+enum ThrowCase
+{
+	Get_Error = 1,
+	Put_Error = 2,
+	PutHeader_Error = 3
+};
+
 class Packet
 {
 public:
+
+
 	enum PACKET
 	{
 		BUFFER_DEFAULT			= 10000,		// 패킷의 기본 버퍼 사이즈.
 		HEADERSIZE_DEFAULT		= 5
 	};
-
 	// 생성자, 파괴자.
 			Packet();
 			Packet(int iBufferSize);
 			Packet(const Packet &SrcPacket);
+			Packet (unsigned char PacketCode,char XOR_Code1,char XOR_Code2,int iBufferSize);
 
 	virtual	~Packet();
 
@@ -57,6 +83,8 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	Packet	&operator << (BYTE byValue);
 	Packet	&operator << (char chValue);
+	Packet &operator << (WCHAR &chValue);
+
 
 	Packet	&operator << (short shValue);
 	Packet	&operator << (WORD wValue);
@@ -73,6 +101,7 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	Packet	&operator >> (BYTE &byValue);
 	Packet	&operator >> (char &chValue);
+	Packet &operator >> (WCHAR &chValue);
 
 	Packet	&operator >> (short &shValue);
 	Packet	&operator >> (WORD &wValue);
@@ -139,6 +168,25 @@ private :
 	static CMemoryPool<Packet> *PacketPool;
 
 	int	PutHeader (char *chpSrc, int iSrcSize);
+
+	unsigned char _PacketCode;
+	char _XORCode1;
+	char _XORCode2;
+	bool _EnCodeFlag;
+
+
+	bool EnCode (void);
+	bool DeCode (HEADER *SrcHeader = NULL);
+
+	void AcquireLOCK (void)
+	{
+		AcquireSRWLockExclusive (&_CS);
+	}
+	void ReleaseLOCK (void)
+	{
+		ReleaseSRWLockExclusive (&_CS);
+	}
+	SRWLOCK _CS;
 
 public :
 	

@@ -35,7 +35,7 @@ public:
 		_pTop->pTopNode = NULL;
 		_pTop->iUniqueNum = 0;
 
-		_pMemoryPool = new CMemoryPool_LF<st_NODE>(0);
+		_pMemoryPool = new CMemoryPool<st_NODE>(0);
 	}
 
 	/////////////////////////////////////////////////////////////////////////
@@ -61,10 +61,7 @@ public:
 	// Parameters: 없음.
 	// Return: (int)사용중인 용량.
 	/////////////////////////////////////////////////////////////////////////
-	long			GetUseSize(void)
-	{
-		return _lUseSize;
-	}
+	long			GetUseSize(void){ return _lUseSize; }
 
 	/////////////////////////////////////////////////////////////////////////
 	// 데이터가 비었는가 ?
@@ -74,10 +71,9 @@ public:
 	/////////////////////////////////////////////////////////////////////////
 	bool			isEmpty(void)
 	{
-		if ( _pTop->pTopNode == NULL )
-		{
+		if (_pTop->pTopNode == NULL)
 			return true;
-		}
+
 		return false;
 	}
 
@@ -93,23 +89,23 @@ public:
 		st_NODE *pNode = _pMemoryPool->Alloc();
 		st_TOP_NODE pPreTopNode;
 		__int64 iUniqueNum = InterlockedIncrement64(&_iUniqueNum);
+		pNode->Data = Data;
 
 		do {
 			pPreTopNode.iUniqueNum = _pTop->iUniqueNum;
 			pPreTopNode.pTopNode = _pTop->pTopNode;
 
-			pNode->Data = Data;
+
 			pNode->pNext = _pTop->pTopNode;
 		} while (!InterlockedCompareExchange128((volatile LONG64 *)_pTop, iUniqueNum, (LONG64)pNode, (LONG64 *)&pPreTopNode));
-		_lUseSize += sizeof(pNode);
-
+		InterlockedIncrement ((volatile LONG * )&_lUseSize);
 		return true;
 	}
 
 	/////////////////////////////////////////////////////////////////////////
 	// 데이타 빼서 가져옴.
 	//
-	// Parameters: (DATA *) 받을 포인터
+	// Parameters: (DATA *) 뽑은 데이터 넣어줄 포인터
 	// Return: (bool) true, false
 	/////////////////////////////////////////////////////////////////////////
 	bool			Pop(DATA *pOutData)
@@ -122,15 +118,15 @@ public:
 		{
 			pPreTopNode.pTopNode = _pTop->pTopNode;
 			pPreTopNode.iUniqueNum = _pTop->iUniqueNum;
-
 			if ( pPreTopNode.pTopNode == NULL )
 			{
+				*pOutData = NULL;
 				return false;
 			}
 
 			pNode = _pTop->pTopNode;
-		} while (!InterlockedCompareExchange128((volatile LONG64 *)_pTop, iUniqueNum, (LONG64)_pTop->pTopNode->pNext, (LONG64 *)&pPreTopNode));
-		_lUseSize -= sizeof (pNode);
+		} while (!InterlockedCompareExchange128((volatile LONG64 *)_pTop, iUniqueNum, (LONG64)pPreTopNode.pTopNode->pNext, (LONG64 *)&pPreTopNode));
+		InterlockedDecrement (( LONG * )&_lUseSize);
 
 		*pOutData = pPreTopNode.pTopNode->Data;
 		_pMemoryPool->Free(pNode);
@@ -138,10 +134,10 @@ public:
 	}
 
 private:
-	CMemoryPool_LF<st_NODE>	*_pMemoryPool;
+	CMemoryPool<st_NODE>	*_pMemoryPool;
 	st_TOP_NODE				*_pTop;
 
 	__int64					_iUniqueNum;
 
-	long					_lUseSize;
+	long						_lUseSize;
 };

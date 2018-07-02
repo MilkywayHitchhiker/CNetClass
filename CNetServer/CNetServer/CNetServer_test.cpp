@@ -16,6 +16,14 @@ public:
 	{
 		Stop ();
 	}
+	virtual void OnStart ()
+	{
+
+	}
+	virtual void OnStop ()
+	{
+
+	}
 
 	virtual void OnRecv (UINT64 SessionID, Packet *p)
 	{
