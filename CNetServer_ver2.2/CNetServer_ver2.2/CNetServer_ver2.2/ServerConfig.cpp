@@ -39,9 +39,9 @@ void CServerConfig::SetConfig (void)
 	parser.SetArea ("SYSTEM");
 	parser.GetValue ("CLIENT_MAX", &_CLIENT_MAX);
 
-	parser.GetValue ("PACKET_CODE",(int *) &_PACKET_CODE);
-	parser.GetValue ("PACKET_KEY1", ( int * )&_PACKET_KEY1);
-	parser.GetValue ("PACKET_KEY2", ( int * )&_PACKET_KEY2);
+	parser.GetValue ("PACKET_CODE", &_PACKET_CODE);
+	parser.GetValue ("PACKET_KEY1", &_PACKET_KEY1);
+	parser.GetValue ("PACKET_KEY2",&_PACKET_KEY2);
 
 
 
@@ -68,6 +68,6 @@ int _MONITORING_SERVER_PORT;
 int _WORKER_THREAD_NUM;
 
 int _CLIENT_MAX;
-unsigned char _PACKET_CODE;
-char _PACKET_KEY1;
-char _PACKET_KEY2;
+int _PACKET_CODE;
+int _PACKET_KEY1;
+int _PACKET_KEY2;

@@ -1,8 +1,9 @@
-// CLanServer.cpp : 콘솔 응용 프로그램에 대한 진입점을 정의합니다.
+// CNetServer_ver2.2.cpp : 콘솔 응용 프로그램에 대한 진입점을 정의합니다.
 //
 
 #include "stdafx.h"
-#include "NetServer.h"
+#include "CNetServer.h"
+//#include "ServerConfig.h"
 
 CCrashDump Dump;
 
@@ -14,7 +15,6 @@ public:
 	}
 	~ECHO (void)
 	{
-		Stop ();
 	}
 	virtual void OnStart ()
 	{
@@ -24,7 +24,6 @@ public:
 	{
 
 	}
-
 	virtual void OnRecv (UINT64 SessionID, Packet *p)
 	{
 		INT64 Num;
@@ -67,16 +66,20 @@ ECHO Network;
 
 int main ()
 {
+	LOG_DIRECTORY (L"LOG_FILE");
+	LOG_LEVEL (LOG_WARNING, false);
+	//	CServerConfig::Initialize ();
 	wprintf (L"MainThread Start\n");
-	Network.Start (L"127.0.0.1", 6000, 5000, 3);
+	Network.Start (L"0.0.0.0", 6000, 200, 10);
+
 
 	UINT AcceptTotal = 0;
 	UINT AcceptTPS = 0;
 	UINT RecvTPS = 0;
 	UINT SendTPS = 0;
 	UINT ConnectSessionCnt = 0;
-	int MemoryPoolCnt = 0;
-	int MemoryPoolUse = 0;
+	INT64 MemoryPoolCnt = 0;
+	INT64 MemoryPoolUse = 0;
 
 	DWORD StartTime = GetTickCount ();
 	DWORD EndTime;
@@ -91,8 +94,8 @@ int main ()
 			wprintf (L"AcceptTPS = %d \n", AcceptTPS);
 			wprintf (L"Sec RecvTPS = %d \n", RecvTPS);
 			wprintf (L"Sec SendTPS = %d \n", SendTPS);
-			wprintf (L"MemoryPoolFull Cnt = %d\n", MemoryPoolCnt);
-			wprintf (L"MemoryPoolUse Cnt = %d \n", MemoryPoolUse);
+			wprintf (L"MemoryPoolFull Cnt = %lld\n", MemoryPoolCnt);
+			wprintf (L"MemoryPoolUse Cnt = %lld \n", MemoryPoolUse);
 
 			wprintf (L"==========================\n");
 
@@ -114,7 +117,7 @@ int main ()
 			break;
 		}
 
-		PROFILE_KEYPROC;
+
 		/*
 		else if ( GetAsyncKeyState ('S') & 0x8001 )
 		{

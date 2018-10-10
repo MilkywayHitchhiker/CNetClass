@@ -25,6 +25,12 @@
     <ClCompile Include="NetServer.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="ServerConfig.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="lib\Parser.cpp">
+      <Filter>소스 파일\lib</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PacketPool.h">
@@ -63,6 +69,12 @@
     <ClInclude Include="NetServer.h">
       <Filter>소스 파일</Filter>
     </ClInclude>
+    <ClInclude Include="ServerConfig.h">
+      <Filter>소스 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\Parser.h">
+      <Filter>소스 파일\lib</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="리소스 파일">
@@ -82,5 +94,10 @@
     <Text Include="ReadMe.txt">
       <Filter>소스 파일</Filter>
     </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="_ChatServer.cnf">
+      <Filter>소스 파일</Filter>
+    </None>
   </ItemGroup>
 </Project>

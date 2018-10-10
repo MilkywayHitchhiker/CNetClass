@@ -1,6 +1,6 @@
 #pragma once
 #include <Windows.h>
-#include "lib\Library.h"
+#include "Parser.h"
 class CServerConfig
 {
 private :
@@ -50,6 +50,6 @@ extern int _MONITORING_SERVER_PORT;
 extern int _WORKER_THREAD_NUM;
 
 extern int _CLIENT_MAX;
-extern unsigned char _PACKET_CODE;
-extern char _PACKET_KEY1;
-extern char _PACKET_KEY2;
+extern int _PACKET_CODE;
+extern int _PACKET_KEY1;
+extern int _PACKET_KEY2;
